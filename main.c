@@ -1,3 +1,4 @@
+Karen Flores, [18.03.17 19:58]
 /*
  *
  *  Created on: 9 de mar. de 2017
@@ -17,19 +18,19 @@
 #include "coffe_machine.h"
 #include "wallet_machine.h"
 
-#define GPIO_BUTTON_S	26 //cable rojo
+#define GPIO_BUTTON_S 26 //cable rojo
 #define GPIO_BUTTON_C 21 //cable marron
 #define GPIO_BUTTON_COIN 20 // cable blanco
 
-#define GPIO_LED	17 //cable naranja
-#define GPIO_CUP	27 //cable amarillo
-#define GPIO_COFFEE	22 //cable verde
-#define GPIO_MILK	10 //cable azul
+#define GPIO_LED 17 //cable naranja
+#define GPIO_CUP 27 //cable amarillo
+#define GPIO_COFFEE 22 //cable verde
+#define GPIO_MILK 10 //cable azul
 //#define GPIO_COIN 7 //I use GPIO_LED
 
-#define CUP_TIME	250
-#define COFFEE_TIME	3000
-#define MILK_TIME	3000
+#define CUP_TIME 250
+#define COFFEE_TIME 3000
+#define MILK_TIME 3000
 
 #define COFFEE_PRICE 50
 
@@ -53,7 +54,6 @@ static void button_coin_isr (void) { flags |= FLAG_BUTTON_COIN; }
 static void timer_isr (union sigval arg) { flags |= FLAG_TIMER; }
 
 static int button_coin_pressed(fsm_t* this){
-  printf("Button coin pressed!\n" );
   return (flags & FLAG_BUTTON_COIN);
 }
 static int button_start_pressed (fsm_t* this) {
@@ -69,7 +69,6 @@ static int button_start_pressed (fsm_t* this) {
   return aux;
  }
 static int button_cancell_pressed (fsm_t* this) {
-  printf("Button cancell pressed!\n" );
   return (flags & FLAG_BUTTON_C); }
 
 static int timer_finished (fsm_t* this) {
@@ -119,7 +118,7 @@ static void finish (fsm_t* this)
 
 static void add_money (fsm_t* this){
   flags = 0;
-  money  = 50;
+  money = 50;
   printf("Total money: %d\n", money);
 }
 static void return_money (fsm_t* this){
@@ -162,7 +161,10 @@ timeval_sub1 (struct timeval *res, struct timeval *a, struct timeval *b)
   res->tv_usec = a->tv_usec - b->tv_usec;
   if (res->tv_usec < 0) {
     --res->tv_sec;
-    res->tv_usec += 1000000;
+    res->tv_usec +=
+
+Karen Flores, [18.03.17 19:58]
+1000000;
   }
 }
 
@@ -207,22 +209,21 @@ int main ()
   digitalWrite (GPIO_LED, 1);
   struct timeval hiperperiod;
   hiperperiod.tv_sec=0;
-  hiperperiod.tv_usec=1000000;
+  hiperperiod.tv_usec=7000000;
   printf("Set up finished\n");
 
   gettimeofday (&next_activation, NULL);
   while (1) {
-    clock_gettime (CLOCK_MONOTONIC,&inicio);
-    fsm_fire (cofm_fsm);
-    fsm_fire (coinsm_fsm);
-    clock_gettime (CLOCK_MONOTONIC,&fin);
-    timeval_sub (&resultado,&fin , &inicio);
+    switch (frame) {
+      case 0: clock_gettime (CLOCK_MONOTONIC,&inicio);
+              fsm_fire (cofm_fsm);
+              fsm_fire (coinsm_fsm);
+              clock_gettime (CLOCK_MONOTONIC,&fin);
+              timeval_sub (&resultado,&fin , &inicio);
+              delay_until (&next_activation);
+    }
+    frame = (frame + 1)%1;
     timeval_add(&next_activation, &next_activation, &hiperperiod);
-    delay_until (&next_activation);
         }
-
-//    frame = ( frame + 1 ) % 1;
-//    timeval_add(&next_activation, &next_activation, &hiperperiod);
-  }
   return 0;
 }
