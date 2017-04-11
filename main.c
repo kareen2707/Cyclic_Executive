@@ -161,10 +161,7 @@ timeval_sub1 (struct timeval *res, struct timeval *a, struct timeval *b)
   res->tv_usec = a->tv_usec - b->tv_usec;
   if (res->tv_usec < 0) {
     --res->tv_sec;
-    res->tv_usec +=
-
-Karen Flores, [18.03.17 19:58]
-1000000;
+    res->tv_usec +=1000000;
   }
 }
 
